@@ -13,6 +13,9 @@ function addPlayer()
     player.height=50
     player.velocity=5
     player.gravity=5
+    player.jumpingTimer=0
+    player.jumpingMax=30
+    player.onGround=false
     player.isJumping=false
 end
 
@@ -36,9 +39,22 @@ function playerUpdate()
     if love.keyboard.isDown("d") then
         localx = player.x+player.velocity
     end
+    if love.keyboard.isDown("space") and player.onGround==true then
+        player.isJumping=true
+        player.jumpingTimer=0
+        player.onGround=false
+    end
+
     if player.isJumping==false then
         localy = player.y+player.gravity
+    else
+        localy = player.y-player.velocity*2+player.jumpingTimer
+        player.jumpingTimer=player.jumpingTimer+1
+        if player.jumpingTimer>=player.jumpingMax then
+            player.isJumping=false
+        end
     end
+    
 
     for index,value in ipairs(objs) do
         if collide(value,localx,player.y) then
@@ -46,11 +62,18 @@ function playerUpdate()
         end
         if collide(value,player.x,localy) then
             localy=player.y
+            print(value.y)
+            print(player.y+player.height)
+            if value.y==player.y+player.height then
+                player.onGround=true
+            end
         end
     end
+
     player.x=localx
     player.y=localy   
 end
+
 
 function collide(obj,localx,localy)
     if collision(obj.x,obj.y,obj.width,obj.height,localx,localy,player.width,player.height) then

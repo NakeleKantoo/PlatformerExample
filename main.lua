@@ -48,7 +48,7 @@ function playerUpdate()
     end
 
     if player.isJumping==false then
-        localy = player.y+player.gravity+player.timeOnAir/2
+        localy = player.y+player.gravity+limitInt(player.timeOnAir/2,20)
         player.timeOnAir=player.timeOnAir+1
     else
         localy = player.y-player.velocity*2+player.jumpingTimer/2
@@ -84,6 +84,14 @@ end
 function collide(obj,localx,localy)
     if collision(obj.x,obj.y,obj.width,obj.height,localx,localy,player.width,player.height) then
         return true
+    end
+end
+
+function limitInt(int, limit)
+    if int>limit then
+        return limit
+    else
+        return int
     end
 end
 

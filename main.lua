@@ -16,13 +16,15 @@ function addPlayer()
     player.jumpingTimer=0
     player.jumpingMax=30
     player.onGround=false
+    player.timeOnAir=0
     player.isJumping=false
 end
 
 function addObjsLvl(lvl)
     if lvl==1 then
-        table.insert(objs, {x=300,y=500,width=500,height=300})
-        table.insert(objs, {x=0,y=200,width=500,height=300})
+        table.insert(objs, {x=0,y=200,width=200,height=100})
+        table.insert(objs, {x=200,y=300,width=200,height=100})
+        table.insert(objs, {x=400,y=400,width=200,height=100})
     end
 end
 
@@ -46,9 +48,10 @@ function playerUpdate()
     end
 
     if player.isJumping==false then
-        localy = player.y+player.gravity
+        localy = player.y+player.gravity+player.timeOnAir/2
+        player.timeOnAir=player.timeOnAir+1
     else
-        localy = player.y-player.velocity*2+player.jumpingTimer
+        localy = player.y-player.velocity*2+player.jumpingTimer/2
         player.jumpingTimer=player.jumpingTimer+1
         if player.jumpingTimer>=player.jumpingMax then
             player.isJumping=false
@@ -61,9 +64,12 @@ function playerUpdate()
             localx=player.x
         end
         if collide(value,player.x,localy) then
-            localy=player.y
-            print(value.y)
-            print(player.y+player.height)
+            if player.isJumping==false then
+                localy=value.y-player.height
+                player.timeOnAir=0
+            else
+                localy=player.y
+            end
             if value.y==player.y+player.height then
                 player.onGround=true
             end
